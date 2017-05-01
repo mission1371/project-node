@@ -4,6 +4,7 @@
 
 var mysql = require('mysql');
 var uuid = require('node-uuid');
+var moment = require('moment');
 var connection;
 
 module.exports = {
@@ -13,19 +14,22 @@ module.exports = {
         }
         return connection;
     },
-    "closeConnection": function () {
-        try {
-            console.log("trying to close connection");
-            connection.end();
-            connection = null;
-        } catch (e) {
-            console.error("failed to close connection");
-            console.error(e);
-        }
-    },
     "generateOid": function () {
         return uuid.v1();
+    },
+    "generateTimestamp": function () {
+        return moment().format("YYYYMMDDHHmmSS");
+    },
+    "generateRandomString": function (len) {
+        var text = "";
+        var chars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm0123456789!^+%&/()=?_@.,<>";
+
+        for (var i = 0; i < len; i++) {
+            text += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return text;
     }
+
 
 };
 

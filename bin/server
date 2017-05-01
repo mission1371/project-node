@@ -1,107 +1,156 @@
 #!/usr/bin/env node
 
-// modules =================================================
-var express        = require('express');
-var app            = express();
-var bodyParser     = require('body-parser');
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
+var timeout = require('connect-timeout');
 
-// configuration ===========================================
-
-
-// config files
-// var db = require('./config/db');
-
-// set our port
 var port = process.env.PORT || 3000;
 
-// connect to our mongoDB database
-// (uncomment after you enter in your own credentials in config/db.js)
-// mongoose.connect(db.url);
-
-// get all data/stuff of the body (POST) parameters
-// parse application/json
 app.use(bodyParser.json());
-
-// parse application/vnd.api+json as json
-app.use(bodyParser.json({ type: 'application/vnd.api+json' }));
-
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// override with the X-HTTP-Method-Override header in the request. simulate DELETE/PUT
+app.use(bodyParser.json({type: 'application/vnd.api+json'}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(methodOverride('X-HTTP-Method-Override'));
-
-// set the static files location /public/img will be /img for users
 app.use(express.static(__dirname + '/public'));
 
-// routes ==================================================
-// require('./app/routes')(app); // configure our routes
+// TODO
+// app.use(timeout(2 * 1000));
 
-// start app ===============================================
-// startup our app at http://localhost:8080
-app.listen(port);
-
-// shoutout to the user
-console.log('Magic happens on port ' + port);
-
-var services = require('../routes/operations');
-var os = require('os');
+var simpleServices = require('../routes/simpleOperations');
+var averageServices = require('../routes/averageOperations');
+var complexServices = require('../routes/complexOperations');
 
 app.get("/", function (req, res) {
     return res.write("<h1> hello world </h1>");
 
 });
 
-app.get('/v1/service/database/createOperation', function(req, res) {
+/** ------------------- Simple Operations ------------------- **/
+app.get('/v1/service/database/simple/createOperation', function (req, res) {
     var snap = new SnapshotSystem();
-    services.createRecords(function (resp) {
-        res.json(generateReturn(snap, resp));
-    })
+    simpleServices.createMessage(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
+    });
 });
 
-app.get('/v1/service/database/readOperation', function(req, res) {
+app.get('/v1/service/database/simple/readOperation', function (req, res) {
     var snap = new SnapshotSystem();
-    services.readRecords(function (resp) {
-        res.json(generateReturn(snap, resp));
+    simpleServices.readMessages(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
     });
-
 });
 
-app.get('/v1/service/database/updateOperation', function(req, res) {
+app.get('/v1/service/database/simple/updateOperation', function (req, res) {
     var snap = new SnapshotSystem();
-    services.updateRecords(function (resp) {
-        res.json(generateReturn(snap, resp));
+    simpleServices.updateMessage(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
     });
-
 });
 
-app.get('/v1/service/database/deleteOperation', function(req, res) {
+app.get('/v1/service/database/simple/deleteOperation', function (req, res) {
     var snap = new SnapshotSystem();
-    services.deleteRecords(function (resp) {
-        res.json(generateReturn(snap, resp));
+    simpleServices.deleteMessage(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
     });
+});
 
+
+/** ------------------- Average Operations ------------------- **/
+app.get('/v1/service/database/average/createOperation', function (req, res) {
+    // var snap = new SnapshotSystem();
+    // services.createRecords(function (resp) {
+    //     res.json(generateReturn(snap, resp));
+    // })
+    res.json({});
+});
+
+app.get('/v1/service/database/average/readOperation', function (req, res) {
+    // var snap = new SnapshotSystem();
+    // services.readRecords(function (resp) {
+    //     if (!req.timedout) res.json(generateReturn(snap, resp));
+    // });
+    res.json({});
+});
+
+app.get('/v1/service/database/average/updateOperation', function (req, res) {
+    // var snap = new SnapshotSystem();
+    // services.updateRecords(function (resp) {
+    //     res.json(generateReturn(snap, resp));
+    // });
+    res.json({});
+});
+
+app.get('/v1/service/database/average/deleteOperation', function (req, res) {
+    // var snap = new SnapshotSystem();
+    // services.deleteRecords(function (resp) {
+    //     res.json(generateReturn(snap, resp));
+    // });
+    res.json({});
+});
+
+
+/** ------------------- Complex Operations ------------------- **/
+app.get('/v1/service/database/complex/createOperation', function (req, res) {
+    // var snap = new SnapshotSystem();
+    // services.createRecords(function (resp) {
+    //     res.json(generateReturn(snap, resp));
+    // })
+    res.json({});
+});
+
+app.get('/v1/service/database/complex/readOperation', function (req, res) {
+    // var snap = new SnapshotSystem();
+    // services.readRecords(function (resp) {
+    //     if (!req.timedout) res.json(generateReturn(snap, resp));
+    // });
+    res.json({});
+});
+
+app.get('/v1/service/database/complex/updateOperation', function (req, res) {
+    // var snap = new SnapshotSystem();
+    // services.updateRecords(function (resp) {
+    //     res.json(generateReturn(snap, resp));
+    // });
+    res.json({});
+});
+
+app.get('/v1/service/database/complex/deleteOperation', function (req, res) {
+    // var snap = new SnapshotSystem();
+    // services.deleteRecords(function (resp) {
+    //     res.json(generateReturn(snap, resp));
+    // });
+    res.json({});
 });
 
 function generateReturn(preSnap, records) {
 
-    var mb = 1024 * 1024;
+    // var mb = 1024 * 1024;
 
     var postSnap = new SnapshotSystem();
-    console.log("final free memory --> " + (postSnap.freeMemory / mb));
-
     var duration = postSnap.time - preSnap.time;
-    var used = (preSnap.freeMemory - postSnap.freeMemory) / mb;
+    // var used = (preSnap.freeMemory - postSnap.freeMemory) / mb;
+
+    // console.log("final free memory --> " + (postSnap.freeMemory / mb));
+    console.log("duration --> " + duration);
+
 
     var ret = {};
     ret.success = "true";
     ret.data = records;
 
     ret.duration = duration;
-    ret.used = used;
-    ret.cpuBefore = preSnap.cpu; //TODO
-    ret.cpuAfter = postSnap.cpu;
+    // ret.used = used;
+    // ret.cpuBefore = preSnap.cpu; //TODO
+    // ret.cpuAfter = postSnap.cpu;
 
     return ret;
 }
@@ -109,12 +158,15 @@ function generateReturn(preSnap, records) {
 var SnapshotSystem = function () {
 
     this.time = new Date();
-    // this.cpu = os.cpus();
-    this.maxMemory = os.totalmem();
-    this.allocatedMemory = 0;
-    this.freeMemory = os.freemem();
+    // // this.cpu = os.cpus();
+    // this.maxMemory = os.totalmem();
+    // this.allocatedMemory = 0;
+    // this.freeMemory = os.freemem();
 
 };
 
-// expose app
+
+app.listen(port);
+console.log('Magic happens on port ' + port);
+
 exports = module.exports = app;
