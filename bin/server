@@ -66,19 +66,21 @@ app.get('/v1/service/database/simple/deleteOperation', function (req, res) {
 
 /** ------------------- Average Operations ------------------- **/
 app.get('/v1/service/database/average/createOperation', function (req, res) {
-    // var snap = new SnapshotSystem();
-    // services.createRecords(function (resp) {
-    //     res.json(generateReturn(snap, resp));
-    // })
-    res.json({});
+    var snap = new SnapshotSystem();
+    averageServices.createInvoice(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
+    });
 });
 
 app.get('/v1/service/database/average/readOperation', function (req, res) {
-    // var snap = new SnapshotSystem();
-    // services.readRecords(function (resp) {
-    //     if (!req.timedout) res.json(generateReturn(snap, resp));
-    // });
-    res.json({});
+    var snap = new SnapshotSystem();
+    averageServices.readInvoice(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
+    });
 });
 
 app.get('/v1/service/database/average/updateOperation', function (req, res) {
