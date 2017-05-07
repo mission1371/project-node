@@ -9,14 +9,7 @@ module.exports = {
     "createMessage": function (callback) {
 
         var connection = DB.getConnection();
-        var message = new Message();
-
-        message.setId(DB.generateOid());
-        message.setCreatedDateTime(DB.generateTimestamp());
-        message.setSendDateTime(DB.generateTimestamp());
-        message.setFrom(DB.generateRandomString(50));
-        message.setTo(DB.generateRandomString(50));
-        message.setContent(DB.generateRandomString(255));
+        var message = new Message().generate(DB);
 
         var sql = message.getSQLInsert();
         connection.query(sql, function (error, results, fields) {

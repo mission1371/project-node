@@ -43,6 +43,17 @@ Message.prototype.setRead = function (isRead) {
     this.isRead = isRead;
 };
 
+Message.prototype.generate = function (db) {
+    this.setId(db.generateOid());
+    this.setCreatedDateTime(db.generateTimestamp());
+    this.setSendDateTime(db.generateTimestamp());
+    this.setFrom(db.generateRandomString(50));
+    this.setTo(db.generateRandomString(50));
+    this.setContent(db.generateRandomString(255));
+    return this;
+};
+
+
 Message.prototype.getSQLInsert = function () {
 
     return " INSERT INTO " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +

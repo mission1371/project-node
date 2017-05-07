@@ -17,6 +17,21 @@ function InvoiceDetail() {
     this.lineTotal = 0;
 }
 
+InvoiceDetail.prototype.generate = function (db, invoiceId) {
+
+    this.setId(db.generateOid());
+    this.setCreatedDateTime(db.generateTimestamp());
+    this.setInvoiceId(invoiceId);
+    this.setItemName(db.generateRandomString(100));
+    this.setItemDescription(db.generateRandomString(1000));
+    this.setUnitPrice(db.generateDecimal());
+    this.setQuantity(db.generateNumber(10));
+    this.setLineTotal(this.getUnitPrice() * this.getQuantity());
+
+    return this;
+
+};
+
 InvoiceDetail.prototype.setId = function (id) {
     this.id = id;
 };
@@ -80,12 +95,44 @@ InvoiceDetail.prototype.getSQLSelect = function (invoiceId) {
         " WHERE INVOICE_ID = '" + invoiceId + "';";
 };
 
+InvoiceDetail.prototype.getSQLUpdate = function (details) {
+
+    var sql = " UPDATE " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_DETAIL_TABLE +
+        " SET ";
+
+    var sqlUnitPrice = " UNIT_PRICE = ( case ";
+    var sqlQuantity = " QUANTITY = ( case ";
+    var sqlLineTotal = " LINE_TOTAL = ( case ";
+    var ids = "";
+    for (var i = 0; i < details.length; i++) {
+        sqlUnitPrice = sqlUnitPrice + " when ID = '" + details[i].ID + "' then '" + details[i].UNIT_PRICE + "'";
+        sqlQuantity = sqlQuantity + " when ID = '" + details[i].ID + "' then '" + details[i].QUANTITY + "'";
+        sqlLineTotal = sqlLineTotal + " when ID = '" + details[i].ID + "' then '" + details[i].LINE_TOTAL + "'";
+        ids = ids + ", '" + details[i].ID + "'";
+    }
+
+    sqlUnitPrice = sqlUnitPrice + " end )";
+    sqlQuantity = sqlQuantity + " end )";
+    sqlLineTotal = sqlLineTotal + " end )";
+
+    sql = sql + sqlUnitPrice + ", " + sqlQuantity + ", " + sqlLineTotal + " WHERE ID in ( " + ids.substring(1, ids.length) + " )";
+    return sql;
+};
+
+InvoiceDetail.prototype.getSQLDelete = function (id) {
+
+    return " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_DETAIL_TABLE +
+        " WHERE " +
+        " INVOICE_ID = '" + id + "'";
+};
+
+
 function getValueString(detail) {
 
     return "( " +
         "'" + detail.id + "', " +
         "'" + detail.createdDateTime + "', " +
-        "'" + detail.invoiceId.id + "', " +
+        "'" + detail.invoiceId + "', " +
         "'" + detail.itemName + "', " +
         "'" + detail.itemDescription + "', " +
         "'" + detail.unitPrice + "', " +

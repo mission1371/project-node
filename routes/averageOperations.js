@@ -10,31 +10,18 @@ module.exports = {
     "createInvoice": function (callback) {
 
         var connection = DB.getConnection();
-        var invoice = new Invoice();
+        var invoice = new Invoice().generate(DB);
         var invoiceDetail = new InvoiceDetail();
 
-        invoice.setId(DB.generateOid());
-        invoice.setCreatedDateTime(DB.generateTimestamp());
-        invoice.setCustomerId(DB.generateOid());
-        invoice.setInvoiceNumber(DB.generateNumber());
-        invoice.setInvoiceDate(DB.getDate());
-        invoice.setDueDate(DB.getDate());
-        invoice.setDiscount(parseInt(Math.random() * 10), 10);
+
 
         var total = 0;
         var lineNumber = parseInt((Math.random() * 1000) & 100, 10);
         var details = [];
         for (var i = 0; i < lineNumber; i++) {
 
-            var line = new InvoiceDetail();
-            line.setId(DB.generateOid());
-            line.setCreatedDateTime(DB.generateTimestamp());
-            line.setInvoiceId(invoice.getId());
-            line.setItemName(DB.generateRandomString(100));
-            line.setItemDescription(DB.generateRandomString(1000));
-            line.setUnitPrice(DB.generateDecimal());
-            line.setQuantity(DB.generateNumber(10));
-            line.setLineTotal(line.getUnitPrice() * line.getQuantity());
+            var line = new InvoiceDetail().generate(DB, invoice.getId());
+
             total = total + line.getLineTotal();
             details.push(line);
         }
@@ -106,51 +93,92 @@ module.exports = {
 
     },
 
-    'updateRecords': function () {
+    'updateInvoice': function (callback) {
 
         var connection = DB.getConnection();
-        var message = new Message();
-        connection.query(message.getSQLSelectUnread(), function (err, rows, fields) {
-            if (!err) {
-                if (rows.length > 0) {
-                    connection.query(message.getSQLUpdate(rows[0].ID));
-                    console.info(rows[0].ID + " updated");
-                    callback(rows[0]);
+        var invoice = new Invoice();
+        var invoiceDetail = new InvoiceDetail();
+
+        connection.query(invoice.getSQLSelectOne(), function (error, results, fields) {
+            if (!error) {
+                if (results.length > 0) {
+                    var invoiceId = results[0].ID;
+                    connection.query(invoiceDetail.getSQLSelect(invoiceId), function (error, results, fields) {
+
+                        if (!error) {
+
+                            var total = 0;
+                            for(var i = 0 ; i < results.length ; i++) {
+
+                                results[i].UNIT_PRICE = DB.generateDecimal();
+                                results[i].QUANTITY = DB.generateNumber(10);
+                                results[i].LINE_TOTAL = results[i].UNIT_PRICE * results[i].QUANTITY;
+                                total = total + results[i].LINE_TOTAL;
+                            }
+                            connection.query(invoice.getSQLUpdate(invoiceId, total));
+                            connection.query(invoiceDetail.getSQLUpdate(results), function (error, results, fields) {
+                                if(!error) {
+                                    console.info("children updated");
+                                    callback(results);
+                                }
+                                else {
+                                    callback(error);
+                                    console.error('Error while performing Query.');
+                                    console.error(error);
+                                }
+                            });
+                        }
+                        else {
+                            callback(error);
+                            console.error('Error while performing Query.');
+                            console.error(error);
+                        }
+                    });
                 }
                 else {
                     callback();
                 }
             }
             else {
-                callback(err);
+                callback(error);
                 console.error('Error while performing Query.');
-                console.error(err);
+                console.error(error);
             }
         });
 
     },
 
-    'deleteRecords': function () {
+    'deleteInvoice': function (callback) {
 
         var connection = DB.getConnection();
-        connection.query('SELECT * from simple_table', function (err, rows, fields) {
-            if (!err) {
+        var invoice = new Invoice();
+        var invoiceDetail = new InvoiceDetail();
+        connection.query(invoice.getSQLSelectOne(), function (error, results, fields) {
+            if (!error) {
+                if (results.length > 0) {
+                    connection.query(invoice.getSQLDelete(results[0].ID));
+                    console.info(results[0].ID + " deleted");
 
-                for (var i = 0; i < rows.length; i++) {
-                    var del =
-                        " DELETE FROM " +
-                        " deneme.simple_table " +
-                        " WHERE " +
-                        " OID = '" + rows[i].OID + "'";
-
-                    connection.query(del);
+                    connection.query(invoiceDetail.getSQLDelete(results[0].ID), function (error, results, fields) {
+                        if (!error) {
+                            console.info("children  deleted");
+                            callback(results);
+                        }
+                        else {
+                            callback(error);
+                            console.error('Error while performing Query.');
+                            console.error(error);
+                        }
+                    });
                 }
-
-                DB.closeConnection();
+                else {
+                    callback();
+                }
             }
             else {
+                callback(error);
                 console.error('Error while performing Query.');
-                DB.closeConnection();
+                console.error(error);
             }
         });
     }

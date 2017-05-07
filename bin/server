@@ -84,29 +84,32 @@ app.get('/v1/service/database/average/readOperation', function (req, res) {
 });
 
 app.get('/v1/service/database/average/updateOperation', function (req, res) {
-    // var snap = new SnapshotSystem();
-    // services.updateRecords(function (resp) {
-    //     res.json(generateReturn(snap, resp));
-    // });
-    res.json({});
+    var snap = new SnapshotSystem();
+    averageServices.updateInvoice(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
+    });
 });
 
 app.get('/v1/service/database/average/deleteOperation', function (req, res) {
-    // var snap = new SnapshotSystem();
-    // services.deleteRecords(function (resp) {
-    //     res.json(generateReturn(snap, resp));
-    // });
-    res.json({});
+    var snap = new SnapshotSystem();
+    averageServices.deleteInvoice(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
+    });
 });
 
 
 /** ------------------- Complex Operations ------------------- **/
 app.get('/v1/service/database/complex/createOperation', function (req, res) {
-    // var snap = new SnapshotSystem();
-    // services.createRecords(function (resp) {
-    //     res.json(generateReturn(snap, resp));
-    // })
-    res.json({});
+    var snap = new SnapshotSystem();
+    complexServices.createOperations(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
+    });
 });
 
 app.get('/v1/service/database/complex/readOperation', function (req, res) {

@@ -16,12 +16,24 @@ function Invoice() {
     this.discount = 0;
 }
 
+Invoice.prototype.generate = function (db) {
+    this.setId(db.generateOid());
+    this.setCreatedDateTime(db.generateTimestamp());
+    this.setCustomerId(db.generateOid());
+    this.setInvoiceNumber(db.generateNumber());
+    this.setInvoiceDate(db.getDate());
+    this.setDueDate(db.getDate());
+    this.setDiscount((Math.random() * 10), 10);
+    return this;
+};
+
+
 Invoice.prototype.setId = function (id) {
     this.id = id;
 };
 
 Invoice.prototype.getId = function () {
-    return this;
+    return this.id;
 };
 
 Invoice.prototype.setCreatedDateTime = function (createdDateTime) {
@@ -72,30 +84,25 @@ Invoice.prototype.getSQLSelectAll = function () {
     return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE + ";";
 };
 
-// Message.prototype.getSQLSelectUnread = function () {
-//     return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
-//         " WHERE IS_READ = 0 LIMIT 1;";
-// };
-//
-// Message.prototype.getSQLSelectRead = function () {
-//     return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
-//         " WHERE IS_READ = 1 LIMIT 1;";
-// };
-//
-// Message.prototype.getSQLUpdate = function (id) {
-//
-//     return " UPDATE " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
-//         " SET " +
-//         " IS_READ = 1 " +
-//         " WHERE " +
-//         " ID = '" + id + "'";
-// };
-//
-// Message.prototype.getSQLDelete = function (id) {
-//
-//     return " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
-//         " WHERE " +
-//         " ID = '" + id + "'";
-// };
+Invoice.prototype.getSQLSelectOne = function () {
+    return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE +
+        " LIMIT 1;";
+};
+
+Invoice.prototype.getSQLUpdate = function (id, total) {
+
+    return " UPDATE " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE +
+        " SET " +
+        " TOTAL = " + total +
+        " WHERE " +
+        " ID = '" + id + "'";
+};
+
+Invoice.prototype.getSQLDelete = function (id) {
+
+    return " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE +
+        " WHERE " +
+        " ID = '" + id + "'";
+};
 
 module.exports = Invoice;
