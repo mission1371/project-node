@@ -52,6 +52,31 @@ CustomerPayment.prototype.getSQLInsert = function (payments) {
     return sql;
 };
 
+CustomerPayment.prototype.getSQLSelect = function (customerId) {
+    return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.CUSTOMER_PAYMENT_TABLE +
+        " WHERE CUSTOMER_ID = '" + customerId + "';";
+};
+
+CustomerPayment.prototype.getSQLSelectInvoices = function (customerId) {
+
+    return " SELECT * FROM "
+        + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE + " i, "
+        + CONSTANTS.SCHEMA + "." + CONSTANTS.CUSTOMER_PAYMENT_TABLE + " cp "
+        + " WHERE cp.CUSTOMER_ID = '" + customerId + "'"
+        + " AND i.ID = cp.INVOICE_ID;";
+
+};
+
+CustomerPayment.prototype.getSQLDeleteMultiple = function (arr) {
+    var sql = " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.CUSTOMER_PAYMENT_TABLE +
+        " WHERE ID IN ( ";
+
+    for(var i = 0 ; i < arr.length - 1 ; i++) {
+        sql += "'" + arr[i] + "', ";
+    }
+    return sql + "'" + arr[arr.length - 1] + "' );";
+};
+
 
 function getValueString(detail) {
 

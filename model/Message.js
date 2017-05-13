@@ -54,19 +54,32 @@ Message.prototype.generate = function (db) {
 };
 
 
-Message.prototype.getSQLInsert = function () {
+Message.prototype.getSQLInsert = function (details) {
 
-    return " INSERT INTO " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
+    if(!details) {
+        details = [this];
+    }
+    var sql = " INSERT INTO " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
         " (ID, CREATED_DATE_TIME, SEND_DATE_TIME, MESSAGE_FROM, MESSAGE_TO, CONTENT, IS_READ)" +
-        " VALUES ( " +
-        "'" + this.id + "', " +
-        "'" + this.createdDateTime + "', " +
-        "'" + this.sendDateTime + "', " +
-        "'" + this.from + "', " +
-        "'" + this.to + "', " +
-        "'" + this.content + "', " +
-        "'" + this.isRead + "'" +
-        ");";
+        " VALUES ";
+
+    for (var i = 0; i < details.length - 1; i++) {
+        sql = sql + getValueString(details[i]) + ", ";
+    }
+    sql = sql + getValueString(details[details.length - 1]);
+
+    return sql;
+
+};
+
+Message.prototype.getSQLSelect = function (arr) {
+    var sql = " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
+        " WHERE ID IN ( ";
+
+    for(var i = 0 ; i < arr.length - 1 ; i++) {
+        sql += "'" + arr[i] + "', ";
+    }
+    return sql + "'" + arr[arr.length - 1] + "' );";
 };
 
 Message.prototype.getSQLSelectAll = function () {
@@ -75,12 +88,12 @@ Message.prototype.getSQLSelectAll = function () {
 
 Message.prototype.getSQLSelectUnread = function () {
     return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
-        " WHERE IS_READ = 0 LIMIT 1;";
+        " WHERE IS_READ = 0 ORDER BY RAND() LIMIT 1;";
 };
 
 Message.prototype.getSQLSelectRead = function () {
     return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
-        " WHERE IS_READ = 1 LIMIT 1;";
+        " WHERE IS_READ = 1 ORDER BY RAND() LIMIT 1;";
 };
 
 Message.prototype.getSQLUpdate = function (id) {
@@ -98,5 +111,27 @@ Message.prototype.getSQLDelete = function (id) {
         " WHERE " +
         " ID = '" + id + "'";
 };
+
+Message.prototype.getSQLDeleteMultiple = function (arr) {
+    var sql = " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.MESSAGE_TABLE +
+        " WHERE ID IN ( ";
+
+    for(var i = 0 ; i < arr.length - 1 ; i++) {
+        sql += "'" + arr[i] + "', ";
+    }
+    return sql + "'" + arr[arr.length - 1] + "' );";
+};
+
+function getValueString(detail) {
+    return "( " +
+        "'" + detail.id + "', " +
+        "'" + detail.createdDateTime + "', " +
+        "'" + detail.sendDateTime + "', " +
+        "'" + detail.from + "', " +
+        "'" + detail.to + "', " +
+        "'" + detail.content + "', " +
+        "'" + detail.isRead + "'" +
+        ")";
+}
 
 module.exports = Message;

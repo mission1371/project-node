@@ -11,11 +11,10 @@ module.exports = {
         var connection = DB.getConnection();
         var message = new Message().generate(DB);
 
-        var sql = message.getSQLInsert();
-        connection.query(sql, function (error, results, fields) {
+        connection.query(message.getSQLInsert(), function (error, results, fields) {
             if (!error) {
                 console.info(message.id + " created");
-                callback(null);
+                callback();
             }
             else {
                 callback(error);

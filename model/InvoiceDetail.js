@@ -126,6 +126,15 @@ InvoiceDetail.prototype.getSQLDelete = function (id) {
         " INVOICE_ID = '" + id + "'";
 };
 
+InvoiceDetail.prototype.getSQLDeleteMultiple = function (arr) {
+    var sql = " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_DETAIL_TABLE +
+        " WHERE INVOICE_ID IN ( ";
+
+    for(var i = 0 ; i < arr.length - 1 ; i++) {
+        sql += "'" + arr[i] + "', ";
+    }
+    return sql + "'" + arr[arr.length - 1] + "' );";
+};
 
 function getValueString(detail) {
 

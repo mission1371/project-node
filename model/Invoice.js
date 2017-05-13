@@ -64,20 +64,23 @@ Invoice.prototype.setDiscount = function (discount) {
     this.discount = discount;
 };
 
-Invoice.prototype.getSQLInsert = function () {
+Invoice.prototype.getSQLInsert = function (details) {
 
-    return " INSERT INTO " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE +
+    if (!details) {
+        details = [this];
+    }
+
+    var sql = " INSERT INTO " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE +
         " (ID, CREATED_DATE_TIME, CUSTOMER_ID, INVOICE_NUMBER, INVOICE_DATE, DUE_DATE, TOTAL, DISCOUNT)" +
-        " VALUES ( " +
-        "'" + this.id + "', " +
-        "'" + this.createdDateTime + "', " +
-        "'" + this.customerId + "', " +
-        "'" + this.invoiceNumber + "', " +
-        "'" + this.invoiceDate + "', " +
-        "'" + this.dueDate + "', " +
-        "'" + this.total + "', " +
-        "'" + this.discount + "'" +
-        ");";
+        " VALUES ";
+
+    for (var i = 0; i < details.length - 1; i++) {
+        sql = sql + getValueString(details[i]) + ", ";
+    }
+    sql = sql + getValueString(details[details.length - 1]);
+
+    return sql;
+
 };
 
 Invoice.prototype.getSQLSelectAll = function () {
@@ -86,7 +89,7 @@ Invoice.prototype.getSQLSelectAll = function () {
 
 Invoice.prototype.getSQLSelectOne = function () {
     return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE +
-        " LIMIT 1;";
+        " ORDER BY RAND() LIMIT 1;";
 };
 
 Invoice.prototype.getSQLUpdate = function (id, total) {
@@ -101,8 +104,32 @@ Invoice.prototype.getSQLUpdate = function (id, total) {
 Invoice.prototype.getSQLDelete = function (id) {
 
     return " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE +
-        " WHERE " +
-        " ID = '" + id + "'";
+        " WHERE ID = '" + id + "'";
 };
+
+Invoice.prototype.getSQLDeleteMultiple = function (arr) {
+    var sql = " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.INVOICE_TABLE +
+        " WHERE ID IN ( ";
+
+    for (var i = 0; i < arr.length - 1; i++) {
+        sql += "'" + arr[i] + "', ";
+    }
+    return sql + "'" + arr[arr.length - 1] + "' );";
+};
+
+function getValueString(detail) {
+
+    return "( " +
+        "'" + detail.id + "', " +
+        "'" + detail.createdDateTime + "', " +
+        "'" + detail.customerId + "', " +
+        "'" + detail.invoiceNumber + "', " +
+        "'" + detail.invoiceDate + "', " +
+        "'" + detail.dueDate + "', " +
+        "'" + detail.total + "', " +
+        "'" + detail.discount + "'" +
+        ")";
+}
+
 
 module.exports = Invoice;

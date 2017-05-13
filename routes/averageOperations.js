@@ -13,8 +13,6 @@ module.exports = {
         var invoice = new Invoice().generate(DB);
         var invoiceDetail = new InvoiceDetail();
 
-
-
         var total = 0;
         var lineNumber = parseInt((Math.random() * 1000) & 100, 10);
         var details = [];

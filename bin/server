@@ -113,27 +113,30 @@ app.get('/v1/service/database/complex/createOperation', function (req, res) {
 });
 
 app.get('/v1/service/database/complex/readOperation', function (req, res) {
-    // var snap = new SnapshotSystem();
-    // services.readRecords(function (resp) {
-    //     if (!req.timedout) res.json(generateReturn(snap, resp));
-    // });
-    res.json({});
+    var snap = new SnapshotSystem();
+    complexServices.readRecords(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
+    });
 });
 
 app.get('/v1/service/database/complex/updateOperation', function (req, res) {
-    // var snap = new SnapshotSystem();
-    // services.updateRecords(function (resp) {
-    //     res.json(generateReturn(snap, resp));
-    // });
-    res.json({});
+    var snap = new SnapshotSystem();
+    complexServices.updateRecords(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
+    });
 });
 
 app.get('/v1/service/database/complex/deleteOperation', function (req, res) {
-    // var snap = new SnapshotSystem();
-    // services.deleteRecords(function (resp) {
-    //     res.json(generateReturn(snap, resp));
-    // });
-    res.json({});
+    var snap = new SnapshotSystem();
+    complexServices.deleteRecords(function (resp) {
+        if (!req.timedout) {
+            res.json(generateReturn(snap, resp));
+        }
+    });
 });
 
 function generateReturn(preSnap, records) {

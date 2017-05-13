@@ -49,6 +49,17 @@ CustomerAddress.prototype.getSQLInsert = function (details) {
     return sql;
 };
 
+CustomerAddress.prototype.getSQLSelect = function (customerId) {
+    return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.CUSTOMER_ADDRESS_TABLE +
+        " WHERE CUSTOMER_ID = '" + customerId + "';";
+};
+
+CustomerAddress.prototype.getSQLDelete = function (customerid) {
+
+    return " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.CUSTOMER_ADDRESS_TABLE +
+        " WHERE CUSTOMER_ID = '" + customerid + "'";
+};
+
 
 function getValueString(detail) {
 

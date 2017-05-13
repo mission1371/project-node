@@ -56,5 +56,18 @@ Customer.prototype.getSQLInsert = function () {
         ");";
 };
 
+Customer.prototype.getSQLSelectOne = function () {
+    return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.CUSTOMER_TABLE +
+        " ORDER BY RAND() LIMIT 1;";
+};
+
+Customer.prototype.getSQLSelectAll = function () {
+    return " SELECT * FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.CUSTOMER_TABLE + ";";
+};
+
+Customer.prototype.getSQLDelete = function (id) {
+    return " DELETE FROM " + CONSTANTS.SCHEMA + "." + CONSTANTS.CUSTOMER_TABLE +
+        " WHERE ID = '" + id + "'";
+};
 
 module.exports = Customer;
