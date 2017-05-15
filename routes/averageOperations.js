@@ -14,7 +14,7 @@ module.exports = {
         var invoiceDetail = new InvoiceDetail();
 
         var total = 0;
-        var lineNumber = parseInt((Math.random() * 1000) & 100, 10);
+        var lineNumber = DB.generateNumber(100);
         var details = [];
         for (var i = 0; i < lineNumber; i++) {
 

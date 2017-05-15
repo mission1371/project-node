@@ -19,7 +19,7 @@ module.exports = {
     },
     "generateNumber": function (precision) {
         precision = precision ? precision : 100000;
-        return parseInt(Math.random() * precision, 10) + 1;
+        return (parseInt(Math.random() * 100000, 10) % precision) + 1;
     },
     "generateDecimal": function () {
         var numPrecision = parseInt(((Math.random() * 100) % 10), 10) + 1;

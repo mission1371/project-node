@@ -12,7 +12,7 @@ var InvoiceDetail = require('../model/InvoiceDetail');
 
 // rest services going to be implement under this section
 module.exports = {
-    "createOperations": function (callback) {
+    "createRecords": function (callback) {
 
         var connection = DB.getConnection();
 
@@ -37,13 +37,13 @@ module.exports = {
         var invoiceDetail = new InvoiceDetail();
         var customerPayment = new CustomerPayment();
 
-        var numOfAddress = (parseInt(Math.random() * 10, 10) % 5) + 1;
+        var numOfAddress = DB.generateNumber(5);
         for (var i = 0; i < numOfAddress; i++) {
             obj.addresses.push(new CustomerAddress().generate(DB, customer.id));
         }
 
         var total = 0;
-        var numOfInvoiceLine = (parseInt(Math.random() * 1000, 10) % 100) + 1;
+        var numOfInvoiceLine = DB.generateNumber(100);
         for (var k = 0; k < numOfInvoiceLine; k++) {
             obj.invoice.detail.push(new InvoiceDetail().generate(DB, invoice.id));
             total = total + obj.invoice.detail[k].lineTotal;
@@ -51,7 +51,7 @@ module.exports = {
         invoice.setTotal(total);
         invoice.setCustomerId(customer.getId());
 
-        var numOfPayment = (parseInt(Math.random() * 10, 10) % 10) + 1;
+        var numOfPayment = DB.generateNumber(10);
         var remaining = total;
         for (var j = 0; j < numOfPayment; j++) {
             var payment = new CustomerPayment();
@@ -191,7 +191,7 @@ module.exports = {
                 if (results.length > 0) {
                     var oid = results[0].ID;
 
-                    var num = (parseInt(Math.random() * 10, 10) % 9) + 1;
+                    var num = DB.generateNumber(9);
                     for(var i = 0 ; i < num ; i++) {
                         messages.push(new Message().generate(DB));
                         messageRelations.push(new CustomerMessage().generate(DB, oid, messages[i].id));
@@ -199,18 +199,17 @@ module.exports = {
 
                     for(var j = 0 ; j < num ; j++) {
                         invoices.push(new Invoice().generate(DB));
-                        var lines = [];
                         var total = 0;
-                        var numOfInvoiceLine = (parseInt(Math.random() * 1000, 10) % 100) + 1;
+                        var numOfInvoiceLine = DB.generateNumber(100);
                         for (var k = 0; k < numOfInvoiceLine; k++) {
-                            lines.push(new InvoiceDetail().generate(DB, invoices[j].getId()));
-                            total = total + lines[k].lineTotal;
-                            invoiceDetails.push(lines[k]);
+                            var line = new InvoiceDetail().generate(DB, invoices[j].getId());
+                            total = total + line.lineTotal;
+                            invoiceDetails.push(line);
                         }
                         invoices[j].setTotal(total);
                         invoices[j].setCustomerId(oid);
 
-                        var numOfPayment = (parseInt(Math.random() * 10, 10) % 10) + 1;
+                        var numOfPayment = DB.generateNumber(10);
                         var remaining = total;
                         for (var l = 0; l < numOfPayment; l++) {
                             var payment = new CustomerPayment();
