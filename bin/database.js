@@ -44,7 +44,7 @@ module.exports = {
     },
     "generateRandomString": function (len) {
         var text = "";
-        var chars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm0123456789!^+%&/()=?_@.,<> ";
+        var chars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm0123456789 ";
 
         for (var i = 0; i < len; i++) {
             text += chars.charAt(Math.floor(Math.random() * chars.length));

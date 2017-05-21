@@ -22,8 +22,8 @@ InvoiceDetail.prototype.generate = function (db, invoiceId) {
     this.setId(db.generateOid());
     this.setCreatedDateTime(db.generateTimestamp());
     this.setInvoiceId(invoiceId);
-    this.setItemName(db.generateRandomString(100));
-    this.setItemDescription(db.generateRandomString(1000));
+    this.setItemName(db.generateRandomString(10));
+    this.setItemDescription(db.generateRandomString(100));
     this.setUnitPrice(db.generateDecimal());
     this.setQuantity(db.generateNumber(10));
     this.setLineTotal(this.getUnitPrice() * this.getQuantity());

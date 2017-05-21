@@ -14,7 +14,7 @@ module.exports = {
         var invoiceDetail = new InvoiceDetail();
 
         var total = 0;
-        var lineNumber = DB.generateNumber(100);
+        var lineNumber = DB.generateNumber(10);
         var details = [];
         for (var i = 0; i < lineNumber; i++) {
 
@@ -114,17 +114,19 @@ module.exports = {
                                 total = total + results[i].LINE_TOTAL;
                             }
                             connection.query(invoice.getSQLUpdate(invoiceId, total));
-                            connection.query(invoiceDetail.getSQLUpdate(results), function (error, results, fields) {
-                                if(!error) {
-                                    console.info("children updated");
-                                    callback(results);
-                                }
-                                else {
-                                    callback(error);
-                                    console.error('Error while performing Query.');
-                                    console.error(error);
-                                }
-                            });
+                            if(results.length > 0) {
+                                connection.query(invoiceDetail.getSQLUpdate(results), function (error, results, fields) {
+                                    if(!error) {
+                                        console.info("children updated");
+                                        callback(results);
+                                    }
+                                    else {
+                                        callback(error);
+                                        console.error('Error while performing Query.');
+                                        console.error(error);
+                                    }
+                                });
+                            }
                         }
                         else {
                             callback(error);

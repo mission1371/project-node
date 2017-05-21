@@ -43,7 +43,7 @@ module.exports = {
         }
 
         var total = 0;
-        var numOfInvoiceLine = DB.generateNumber(100);
+        var numOfInvoiceLine = DB.generateNumber(10);
         for (var k = 0; k < numOfInvoiceLine; k++) {
             obj.invoice.detail.push(new InvoiceDetail().generate(DB, invoice.id));
             total = total + obj.invoice.detail[k].lineTotal;
@@ -105,7 +105,7 @@ module.exports = {
         });
 
         function finish(error, num) {
-            console.log("check");
+            // console.log("check");
             if (!error) {
                 if (num == numOfOperations) {
                     console.log("returned");
@@ -150,7 +150,7 @@ module.exports = {
         });
 
         function process(error, num, obj) {
-            console.log("check");
+            // console.log("check");
             if (!error) {
                 result.push(obj);
                 if (num == 0) {
@@ -200,7 +200,7 @@ module.exports = {
                     for(var j = 0 ; j < num ; j++) {
                         invoices.push(new Invoice().generate(DB));
                         var total = 0;
-                        var numOfInvoiceLine = DB.generateNumber(100);
+                        var numOfInvoiceLine = DB.generateNumber(10);
                         for (var k = 0; k < numOfInvoiceLine; k++) {
                             var line = new InvoiceDetail().generate(DB, invoices[j].getId());
                             total = total + line.lineTotal;
@@ -264,7 +264,7 @@ module.exports = {
         });
 
         function process(error, num) {
-            console.log("process");
+            // console.log("process");
             if (!error) {
                 if (num == numOfOperations) {
                     console.log("returned");
@@ -305,9 +305,9 @@ module.exports = {
                     /** ---> get message relations **/
                     connection.query(customerMessage.getSQLSelect(oid), function (error, results, fields) {
                         if (!error) {
-                            console.info("message realtions for " + oid + " selected");
+                            // console.info("message realtions for " + oid + " selected");
                             if (results.length > 0) {
-                                console.info(results.length + " message relations found for " + oid);
+                                // console.info(results.length + " message relations found for " + oid);
                                 var arrMessage = [];
                                 var arrRelation = [];
                                 for (var i = 0; i < results.length; i++) {
@@ -315,12 +315,12 @@ module.exports = {
                                     arrMessage.push(results[i].MESSAGE_ID);
                                 }
                                 connection.query(message.getSQLDeleteMultiple(arrMessage), function (error, results, fields) {
-                                    console.info(results.length + " message deleted for " + oid);
+                                    // console.info(results.length + " message deleted for " + oid);
                                     process(error, ++flag);
                                 });
 
                                 connection.query(customerMessage.getSQLDeleteMultiple(arrRelation), function (error, results, fields) {
-                                    console.info(results.length + " message relations deleted for " + oid);
+                                    // console.info(results.length + " message relations deleted for " + oid);
                                     process(error, ++flag);
                                 });
                             }
@@ -337,16 +337,16 @@ module.exports = {
 
                     /** ---> delete address **/
                     connection.query(customerAddresses.getSQLDelete(oid), function (error, results, fields) {
-                        console.log("customer addresses deleted");
+                        // console.log("customer addresses deleted");
                         process(error, ++flag);
                     });
 
                     /** ---> get invoice relations **/
                     connection.query(customerPayment.getSQLSelect(oid), function (error, results, fields) {
                         if (!error) {
-                            console.info("payment relations for " + oid + " selected");
+                            // console.info("payment relations for " + oid + " selected");
                             if (results.length > 0) {
-                                console.info(results.length + " payment relations found for " + oid);
+                                // console.info(results.length + " payment relations found for " + oid);
                                 var arrInvoice = [];
                                 var arrRelation = [];
                                 for (var i = 0; i < results.length; i++) {
@@ -356,19 +356,19 @@ module.exports = {
 
                                 /** delete invoice details **/
                                 connection.query(invoiceDetail.getSQLDeleteMultiple(arrInvoice), function (error, results, fields) {
-                                    console.info(arrInvoice.length + " invoice deleted for " + oid);
+                                    // console.info(arrInvoice.length + " invoice deleted for " + oid);
                                     process(error, ++flag);
                                 });
 
                                 /** delete invoices **/
                                 connection.query(invoice.getSQLDeleteMultiple(arrInvoice), function (error, results, fields) {
-                                    console.info(" invoice details deleted for " + oid);
+                                    // console.info(" invoice details deleted for " + oid);
                                     process(error, ++flag);
                                 });
 
                                 /** delete customer payments **/
                                 connection.query(customerPayment.getSQLDeleteMultiple(arrRelation), function (error, results, fields) {
-                                    console.info(results.length + " message relations deleted for " + oid);
+                                    // console.info(results.length + " message relations deleted for " + oid);
                                     process(error, ++flag);
                                 });
                             }
@@ -385,7 +385,7 @@ module.exports = {
 
                     /** ---> delete customer **/
                     connection.query(customer.getSQLDelete(oid), function (error, results, fields) {
-                        console.log("customer deleted");
+                        // console.log("customer deleted");
                         process(error, ++flag);
                     });
                 }
@@ -401,7 +401,7 @@ module.exports = {
         });
 
         function process(error, num) {
-            console.log("process");
+            // console.log("process");
             if (!error) {
                 if (num == numOfOperations) {
                     console.log("returned");
@@ -466,7 +466,7 @@ function fetchRecord(customer, callback) {
     // TODO invoice details
 
     function process(error, num) {
-        console.log("process");
+        // console.log("process");
         if (!error) {
             if (num == numOfOperations) {
                 console.log("returned");
