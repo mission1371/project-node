@@ -85,6 +85,11 @@ module.exports = {
                     if (0 === --pending) {
                         cb(returnArr); //callback if all queries are processed
                     }
+                    if(err) {
+                        callback(err);
+                        console.error('Error while performing Query.');
+                        console.error(err);
+                    }
                 });
             }
         }
@@ -101,21 +106,21 @@ module.exports = {
             if (!error) {
                 if (results.length > 0) {
                     var invoiceId = results[0].ID;
-                    connection.query(invoiceDetail.getSQLSelect(invoiceId), function (error, results, fields) {
+                    connection.query(invoiceDetail.getSQLSelect(invoiceId), function (error, children, fields) {
 
                         if (!error) {
+                            if(children.length > 0) {
+                                var total = 0;
+                                for(var i = 0 ; i < children.length ; i++) {
 
-                            var total = 0;
-                            for(var i = 0 ; i < results.length ; i++) {
+                                    children[i].UNIT_PRICE = DB.generateDecimal();
+                                    children[i].QUANTITY = DB.generateNumber(10);
+                                    children[i].LINE_TOTAL = children[i].UNIT_PRICE * children[i].QUANTITY;
+                                    total = total + children[i].LINE_TOTAL;
+                                }
+                                connection.query(invoice.getSQLUpdate(invoiceId, total));
 
-                                results[i].UNIT_PRICE = DB.generateDecimal();
-                                results[i].QUANTITY = DB.generateNumber(10);
-                                results[i].LINE_TOTAL = results[i].UNIT_PRICE * results[i].QUANTITY;
-                                total = total + results[i].LINE_TOTAL;
-                            }
-                            connection.query(invoice.getSQLUpdate(invoiceId, total));
-                            if(results.length > 0) {
-                                connection.query(invoiceDetail.getSQLUpdate(results), function (error, results, fields) {
+                                connection.query(invoiceDetail.getSQLUpdate(children), function (error, results, fields) {
                                     if(!error) {
                                         console.info("children updated");
                                         callback(results);
@@ -126,6 +131,9 @@ module.exports = {
                                         console.error(error);
                                     }
                                 });
+                            }
+                            else {
+                                callback();
                             }
                         }
                         else {

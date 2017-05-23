@@ -176,7 +176,7 @@ var SnapshotSystem = function () {
 
 
 var server = app.listen(port);
-server.timeout = 10*60*1000;
+server.timeout = 100*60*1000;
 console.log('Magic happens on port ' + port);
 
 exports = module.exports = app;
